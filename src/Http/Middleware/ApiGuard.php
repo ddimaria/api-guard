@@ -190,16 +190,13 @@ class ApiGuard
           }
       }
 
-        // login User
-        $headers = apache_request_headers();
-        $api_key = $headers[Config::get('apiguard.keyName', 'X-Authorization')];
+      // login User
+      $user_id = App::make(Config::get('apiguard.model', 'Chrisbjr\ApiGuard\Models\ApiKey'))->where('key', $key)->pluck('user_id');
 
-        $user_id = App::make(Config::get('apiguard.model', 'Chrisbjr\ApiGuard\Models\ApiKey'))->where('key', $api_key)
-            ->pluck('user_id');
-
-        if($user_id !== 0)
-            Auth::loginUsingId($user_id);
-
-        return $next($request);
+      if($user_id !== 0) {
+          Auth::loginUsingId($user_id);
+      }
+      
+      return $next($request);
     }
 }
